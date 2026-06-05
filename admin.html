@@ -1,0 +1,53 @@
+
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin · Turnierdashboard</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <script>
+    window.TOURNAMENT_CONFIG = {
+      repoOwner: "DEIN-USER-ODER-ORG",
+      repoName: "DEIN-DATEN-REPO",
+      filePath: "data.json",
+      branch: "main",
+      rawDataUrl: "https://raw.githubusercontent.com/DEIN-USER-ODER-ORG/DEIN-DATEN-REPO/main/data.json",
+      logoUrl: ""
+    };
+  </script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body data-page="admin">
+  <div class="login-overlay" id="login-overlay">
+    <div class="login-box">
+      <h1>Admin-Anmeldung</h1>
+      <p>Hier den GitHub Token eintragen. Kein Benutzername notwendig.</p>
+      <div class="stack">
+        <input id="token" type="password" placeholder="GitHub Token">
+        <div class="row">
+          <button class="btn btn-primary" data-action="login">Anmelden</button>
+          <button class="btn btn-ghost" data-action="refresh">Neu laden</button>
+        </div>
+      </div>
+      <p class="small muted" style="margin-top:14px">
+        Hinweis: Für einen öffentlichen GitHub-Pages-Auftritt ist das nur eine einfache Sperre. Der Token ist im Browser nie wirklich geheim.
+      </p>
+    </div>
+  </div>
+
+  <div id="admin-shell" class="page">
+    <div class="shell">
+      <div class="topbar">
+        <div class="title">
+          <h1>Admin</h1>
+          <div class="sub">Gruppen anlegen, Zeiten pflegen, Platzierungen setzen</div>
+        </div>
+        <div class="badge">Uhrzeit: <span class="js-clock"></span></div>
+      </div>
+      <div id="status" class="footer">Bereit.</div>
+      <div id="admin-root"></div>
+    </div>
+  </div>
+</body>
+</html>

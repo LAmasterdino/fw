@@ -1,0 +1,45 @@
+
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Turnierdashboard</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="page">
+    <div class="shell">
+      <div class="topbar">
+        <div class="title">
+          <h1>Turnierdashboard</h1>
+          <div class="sub">GitHub Pages · Admin · Client · Live</div>
+        </div>
+        <div class="badge">Farben: #DD0D1B · Weiß</div>
+      </div>
+      <div class="grid client">
+        <section class="card">
+          <h3>Seiten</h3>
+          <div class="stack">
+            <a class="btn btn-primary" href="admin.html">Admin</a>
+            <a class="btn btn-ghost" href="client.html">Tunierclient</a>
+            <a class="btn btn-ghost" href="live.html">Tunier Live</a>
+          </div>
+        </section>
+        <section class="card">
+          <h3>Datenspeicherung</h3>
+          <p class="muted">
+            Die eigentlichen Turnierdaten liegen in einem separaten Repo als <code>data.json</code>.
+            Die Admin-Seite schreibt per GitHub-API in dieses Repo.
+          </p>
+          <p class="muted">
+            In der Konfiguration von <code>assets/app.js</code> musst du <strong>repoOwner</strong>, <strong>repoName</strong>,
+            <strong>filePath</strong> und optional <strong>rawDataUrl</strong> eintragen.
+          </p>
+        </section>
+      </div>
+      <div class="footer">Startseite des Projekts</div>
+    </div>
+  </div>
+</body>
+</html>

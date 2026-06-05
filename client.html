@@ -1,0 +1,26 @@
+
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tunierclient · Turnierdashboard</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <script>
+    window.TOURNAMENT_CONFIG = {
+      repoOwner: "DEIN-USER-ODER-ORG",
+      repoName: "DEIN-DATEN-REPO",
+      filePath: "data.json",
+      branch: "main",
+      rawDataUrl: "https://raw.githubusercontent.com/DEIN-USER-ODER-ORG/DEIN-DATEN-REPO/main/data.json",
+      logoUrl: ""
+    };
+  </script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body data-page="client">
+  <div class="page">
+    <div id="client-root"></div>
+  </div>
+</body>
+</html>
