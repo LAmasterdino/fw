@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Admin · Turnierdashboard</title>
+  <style>
+    :root{
+      --red:#DD0D1B;
+      --red-dark:#b60b17;
+      --bg:#f6f7f9;
+      --card:#ffffff;
+      --text:#16181d;
+      --muted:#6b7280;
+      --line:rgba(221,13,27,.18);
+      --shadow:0 14px 30px rgba(0,0,0,.10);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(221,13,27,.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(221,13,27,.08), transparent 24%),
+        linear-gradient(180deg,#fff,var(--bg));
+      color:var(--text);
+    }
+    .wrap{max-width:1600px;margin:0 auto;padding:20px}
+    .topbar,.card,.footer{
+      background:rgba(255,255,255,.92);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(10px);
+    }
+    .topbar{
+      display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
+      padding:18px 20px;margin-bottom:18px
+    }
+    h1{margin:0;font-size:clamp(1.7rem,2vw,2.6rem);color:var(--red);letter-spacing:-.03em}
+    .sub{color:var(--muted);margin-top:6px}
+    .badge{
+      padding:10px 14px;border-radius:999px;background:var(--red);color:#fff;font-weight:800;white-space:nowrap
+    }
+    .grid{display:grid;gap:18px;grid-template-columns:repeat(12,minmax(0,1fr))}
+    .card{padding:18px}
+    .login{grid-column:1/-1;border-left:6px solid var(--red)}
+    .main{grid-column:1/-1}
+    .muted{color:var(--muted)}
+    .small{font-size:.92rem}
+    .tag{
+      display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;
+      background:rgba(221,13,27,.08);color:var(--red-dark);font-weight:800
+    }
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .spread{display:flex;justify-content:space-between;gap:12px;align-items:flex-end;flex-wrap:wrap}
+    .stack{display:grid;gap:12px}
+    .label{display:block;margin-bottom:8px;font-weight:800;color:var(--red-dark);font-size:.92rem}
+    input, textarea{
+      width:100%;font:inherit;border:1px solid rgba(221,13,27,.24);border-radius:14px;background:#fff;
+      padding:12px 14px;outline:none
+    }
+    textarea{min-height:110px;resize:vertical}
+    input:focus, textarea:focus{border-color:var(--red);box-shadow:0 0 0 4px rgba(221,13,27,.10)}
+    .btn{
+      appearance:none;border:0;border-radius:14px;padding:12px 16px;font-weight:800;cursor:pointer;
+      min-height:46px;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;
+      transition:transform .15s ease,background .15s ease,opacity .15s ease;text-decoration:none
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{background:var(--red);color:#fff}
+    .btn-primary:hover{background:var(--red-dark)}
+    .btn-soft{background:rgba(221,13,27,.06);color:var(--red-dark);border:1px solid rgba(221,13,27,.16)}
+    .btn-soft:hover{background:rgba(221,13,27,.09)}
+    .btn-danger{background:#fff;color:var(--red-dark);border:1px solid rgba(221,13,27,.24)}
+    .btn-danger:hover{background:rgba(221,13,27,.06)}
+    .status{
+      margin-top:12px;padding:12px 14px;border-radius:14px;border:1px solid rgba(221,13,27,.14);
+      background:rgba(221,13,27,.06)
+    }
+    .status.error{
+      background:rgba(221,13,27,.10);border-color:rgba(221,13,27,.28);color:var(--red-dark);font-weight:700
+    }
+    .table-wrap{
+      margin-top:14px;overflow:auto;border:1px solid rgba(221,13,27,.16);border-radius:18px;background:#fff
+    }
+    table{width:100%;border-collapse:collapse;min-width:1180px}
+    thead th{
+      position:sticky;top:0;background:#fff;z-index:1;color:var(--red-dark);font-size:.92rem
+    }
+    th,td{border-bottom:1px solid rgba(221,13,27,.10);padding:10px;text-align:left;vertical-align:middle}
+    tr:hover td{background:rgba(221,13,27,.025)}
+    .mini{min-width:120px;width:100%}
+    .footer{margin-top:18px;padding:14px 16px}
+    .hint{
+      padding:12px 14px;border-radius:14px;border:1px solid rgba(221,13,27,.12);background:rgba(221,13,27,.05);color:var(--muted)
+    }
+    .two-col{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+    @media (max-width: 900px){
+      .two-col{grid-template-columns:1fr}
+    }
+    @media (max-width: 840px){
+      .login-actions{display:grid;grid-template-columns:1fr}
+      .login-actions .btn{width:100%}
+    }
+    .pill{
+      display:inline-flex;align-items:center;padding:8px 12px;border-radius:999px;background:rgba(221,13,27,.08);
+      color:var(--red-dark);font-weight:800
+    }
+  </style>
+</head>
+<body data-page="admin">
+  <div class="wrap">
+    <div class="topbar">
+      <div>
+        <h1>Admin</h1>
+        <div class="sub">Gruppen, Zeiten und Platzierungen direkt in der Tabelle bearbeiten</div>
+      </div>
+      <div class="badge">Uhrzeit: <span id="clock"></span></div>
+    </div>
+
+    <div class="grid">
+      <section class="card login">
+        <div class="spread">
+          <div>
+            <h2 style="margin:0;color:var(--red);font-size:1.2rem">Anmeldung</h2>
+            <div class="muted small">GitHub Token eintragen, kein Benutzername nötig.</div>
+          </div>
+          <div class="tag">Admin-Zugang</div>
+        </div>
+
+        <div class="stack" style="margin-top:14px">
+          <div>
+            <label class="label" for="token">GitHub Token</label>
+            <input id="token" type="password" placeholder="ghp_... oder github_pat_..." autocomplete="current-password">
+          </div>
+          <div class="row login-actions">
+            <button class="btn btn-primary" id="loginBtn" type="button">Anmelden</button>
+            <button class="btn btn-soft" id="reloadBtn" type="button">Neu laden</button>
+            <button class="btn btn-danger" id="logoutBtn" type="button">Token löschen</button>
+          </div>
+          <div class="hint">
+            Diese Seite speichert dieselbe JSON-Struktur wie Client und Live. Es gibt kein Popup und keinen Import-/Texterkennungsbereich.
+          </div>
+        </div>
+      </section>
+
+      <section class="card main">
+        <div class="spread">
+          <div>
+            <h2 style="margin:0;color:var(--red-dark)">Turnierdaten</h2>
+            <div class="muted small">3 Läufe für alle, danach Halbfinale, Platz 3 und Finale</div>
+          </div>
+          <div class="row">
+            <span class="pill" id="authState">nicht angemeldet</span>
+            <button class="btn btn-soft" id="addGroupBtn" type="button">+ Gruppe hinzufügen</button>
+            <button class="btn btn-primary" id="saveBtn" type="button">Speichern</button>
+          </div>
+        </div>
+
+        <div class="two-col" style="margin-top:14px">
+          <div>
+            <label class="label" for="eventName">Turniername</label>
+            <input id="eventName" type="text" placeholder="Turniername">
+          </div>
+          <div>
+            <label class="label" for="logoUrl">Logo-URL</label>
+            <input id="logoUrl" type="text" placeholder="https://...">
+          </div>
+          <div>
+            <label class="label" for="nextGroup">Nächste Gruppe</label>
+            <input id="nextGroup" type="text" placeholder="z. B. Gruppe 4">
+          </div>
+          <div>
+            <label class="label" for="lastGroup">Letzte Gruppe</label>
+            <input id="lastGroup" type="text" placeholder="z. B. Gruppe 3">
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <label class="label" for="note">Hinweis</label>
+          <textarea id="note" placeholder="Hinweis für Client / Live"></textarea>
+        </div>
+
+        <div id="status" class="status">Bereit.</div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Gruppe</th>
+                <th>Lauf 1</th>
+                <th>Lauf 2</th>
+                <th>Lauf 3</th>
+                <th>Halbfinale</th>
+                <th>Platz 3</th>
+                <th>Finale</th>
+                <th>Platzierung</th>
+                <th>HF</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="groupsBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <div class="footer muted small">
+      GitHub Pages · Adminseite · Farbstil um <strong>#DD0D1B</strong> und Weiß
+    </div>
+  </div>
+
+<script>
+(() => {
+  const CONFIG = {
+    repoOwner: "DEIN-USER-ODER-ORG",
+    repoName: "DEIN-DATEN-REPO",
+    filePath: "data.json",
+    branch: "main",
+    rawDataUrl: "https://raw.githubusercontent.com/DEIN-USER-ODER-ORG/DEIN-DATEN-REPO/main/data.json"
+  };
+
+  const state = {
+    token: sessionStorage.getItem("tournament_token") || "",
+    sha: null,
+    data: null
+  };
+
+  const $ = (s, r=document) => r.querySelector(s);
+  const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+
+  function clockString(){
+    return new Intl.DateTimeFormat("de-DE",{timeStyle:"medium"}).format(new Date());
+  }
+  function uid(){
+    return `g_${Math.random().toString(36).slice(2,9)}_${Date.now().toString(36)}`;
+  }
+  function emptyGroup(name=""){
+    return {
+      id: uid(),
+      name,
+      qualified: false,
+      placement: "",
+      heats: [
+        { label:"Lauf 1", time:"" },
+        { label:"Lauf 2", time:"" },
+        { label:"Lauf 3", time:"" }
+      ],
+      semifinal: "",
+      thirdPlace: "",
+      final: ""
+    };
+  }
+  function normalizeData(data){
+    const src = data && typeof data === "object" ? data : {};
+    return {
+      version: src.version || 1,
+      updatedAt: src.updatedAt || null,
+      eventName: src.eventName || "Turnier",
+      logoUrl: src.logoUrl || "",
+      nextGroup: src.nextGroup || "",
+      lastGroup: src.lastGroup || "",
+      note: src.note || "",
+      groups: Array.isArray(src.groups) ? src.groups.map((g, i) => {
+        const group = emptyGroup(g?.name || `Gruppe ${i+1}`);
+        group.id = g?.id || uid();
+        group.name = g?.name || group.name;
+        group.qualified = Boolean(g?.qualified);
+        group.placement = g?.placement ?? "";
+        group.heats = Array.isArray(g?.heats) && g.heats.length ? g.heats.slice(0,3).map((h, idx) => ({
+          label: h?.label || `Lauf ${idx+1}`,
+          time: h?.time ?? ""
+        })) : group.heats;
+        while(group.heats.length < 3) group.heats.push({ label:`Lauf ${group.heats.length+1}`, time:"" });
+        group.semifinal = g?.semifinal ?? "";
+        group.thirdPlace = g?.thirdPlace ?? "";
+        group.final = g?.final ?? "";
+        return group;
+      }) : []
+    };
+  }
+
+  async function fetchJson(url, options = {}){
+    const res = await fetch(url, {
+      ...options,
+      headers: {
+        Accept: "application/vnd.github+json",
+        ...(options.headers || {})
+      }
+    });
+    if(!res.ok){
+      const text = await res.text().catch(() => "");
+      throw new Error(`HTTP ${res.status} ${res.statusText}${text ? " — " + text : ""}`);
+    }
+    return res.json();
+  }
+
+  async function readPublic(){
+    const bust = CONFIG.rawDataUrl.includes("?") ? "&" : "?";
+    const res = await fetch(`${CONFIG.rawDataUrl}${bust}v=${Date.now()}`, { cache: "no-store" });
+    if(!res.ok) throw new Error(`Konnte Daten nicht laden (${res.status})`);
+    return normalizeData(await res.json());
+  }
+
+  async function readPrivate(token){
+    const url = `https://api.github.com/repos/${encodeURIComponent(CONFIG.repoOwner)}/${encodeURIComponent(CONFIG.repoName)}/contents/${CONFIG.filePath}?ref=${encodeURIComponent(CONFIG.branch)}`;
+    const json = await fetchJson(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    state.sha = json.sha;
+    const content = decodeURIComponent(escape(atob(json.content.replace(/\n/g, ""))));
+    return normalizeData(JSON.parse(content));
+  }
+
+  async function savePrivate(token, data){
+    const readUrl = `https://api.github.com/repos/${encodeURIComponent(CONFIG.repoOwner)}/${encodeURIComponent(CONFIG.repoName)}/contents/${CONFIG.filePath}?ref=${encodeURIComponent(CONFIG.branch)}`;
+    const current = await fetchJson(readUrl, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const putUrl = `https://api.github.com/repos/${encodeURIComponent(CONFIG.repoOwner)}/${encodeURIComponent(CONFIG.repoName)}/contents/${CONFIG.filePath}`;
+    const body = {
+      message: `Update tournament data ${new Date().toISOString()}`,
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
+      sha: current.sha,
+      branch: CONFIG.branch
+    };
+
+    const res = await fetch(putUrl, {
+      method: "PUT",
+      headers: {
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    });
+
+    if(!res.ok){
+      const text = await res.text().catch(() => "");
+      throw new Error(`Speichern fehlgeschlagen (${res.status}) ${text}`);
+    }
+    const out = await res.json();
+    state.sha = out?.content?.sha || current.sha;
+    return out;
+  }
+
+  function setStatus(msg, error=false){
+    const el = $("#status");
+    el.textContent = msg;
+    el.classList.toggle("error", !!error);
+  }
+
+  function renderClock(){
+    $("#clock").textContent = clockString();
+  }
+
+  function updateAuthUI(){
+    $("#authState").textContent = state.token ? "angemeldet" : "nicht angemeldet";
+    $("#authState").style.background = state.token ? "rgba(34,197,94,.12)" : "rgba(221,13,27,.08)";
+    $("#authState").style.color = state.token ? "#15803d" : "var(--red-dark)";
+    $("#token").value = state.token || "";
+  }
+
+  function renderTable(){
+    const body = $("#groupsBody");
+    if(!body || !state.data) return;
+
+    body.innerHTML = state.data.groups.map(group => `
+      <tr data-id="${group.id}">
+        <td><input class="mini js-field" data-field="name" value="${escapeHtml(group.name)}" placeholder="Gruppenname"></td>
+        <td><input class="mini js-field" data-field="heats.0.time" value="${escapeHtml(group.heats?.[0]?.time || "")}" placeholder="Zeit"></td>
+        <td><input class="mini js-field" data-field="heats.1.time" value="${escapeHtml(group.heats?.[1]?.time || "")}" placeholder="Zeit"></td>
+        <td><input class="mini js-field" data-field="heats.2.time" value="${escapeHtml(group.heats?.[2]?.time || "")}" placeholder="Zeit"></td>
+        <td><input class="mini js-field" data-field="semifinal" value="${escapeHtml(group.semifinal || "")}" placeholder="Halbfinale"></td>
+        <td><input class="mini js-field" data-field="thirdPlace" value="${escapeHtml(group.thirdPlace || "")}" placeholder="Platz 3"></td>
+        <td><input class="mini js-field" data-field="final" value="${escapeHtml(group.final || "")}" placeholder="Finale"></td>
+        <td><input class="mini js-field" data-field="placement" value="${escapeHtml(group.placement || "")}" placeholder="Platzierung"></td>
+        <td style="text-align:center">
+          <input type="checkbox" class="js-field" data-field="qualified" ${group.qualified ? "checked" : ""}>
+        </td>
+        <td><button class="btn btn-danger js-remove" type="button">-</button></td>
+      </tr>
+    `).join("");
+
+    $$(".js-field", body).forEach(el => {
+      if(el.type === "checkbox"){
+        el.addEventListener("change", onFieldChange);
+      } else {
+        el.addEventListener("input", onFieldChange);
+      }
+    });
+
+    $$(".js-remove", body).forEach(btn => {
+      btn.addEventListener("click", () => {
+        const tr = btn.closest("tr");
+        const id = tr?.dataset?.id;
+        state.data.groups = state.data.groups.filter(g => g.id !== id);
+        renderTable();
+        setStatus("Gruppe entfernt. Bitte speichern.");
+      });
+    });
+  }
+
+  function onFieldChange(e){
+    const el = e.currentTarget;
+    const tr = el.closest("tr");
+    const id = tr?.dataset?.id;
+    const group = state.data.groups.find(g => g.id === id);
+    if(!group) return;
+
+    const field = el.dataset.field;
+    if(field === "qualified"){
+      group.qualified = el.checked;
+      return;
+    }
+    if(field.startsWith("heats.")){
+      const idx = Number(field.split(".")[1]);
+      if(!group.heats[idx]) group.heats[idx] = { label:`Lauf ${idx+1}`, time:"" };
+      group.heats[idx].time = el.value;
+      return;
+    }
+    group[field] = el.value;
+  }
+
+  function escapeHtml(str){
+    return String(str ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"','&quot;')
+      .replaceAll("'","&#39;");
+  }
+
+  async function loadData(){
+    try{
+      if(state.token){
+        try{
+          state.data = await readPrivate(state.token);
+        }catch(err){
+          console.warn(err);
+          state.data = await readPublic();
+        }
+      }else{
+        state.data = await readPublic();
+      }
+
+      $("#eventName").value = state.data.eventName || "";
+      $("#logoUrl").value = state.data.logoUrl || "";
+      $("#nextGroup").value = state.data.nextGroup || "";
+      $("#lastGroup").value = state.data.lastGroup || "";
+      $("#note").value = state.data.note || "";
+      setStatus(`Daten geladen · ${state.data.groups.length} Gruppen`);
+      renderTable();
+    }catch(err){
+      console.error(err);
+      setStatus(err.message || "Laden fehlgeschlagen", true);
+    }
+  }
+
+  async function login(){
+    const token = $("#token").value.trim();
+    if(!token) return setStatus("Bitte GitHub Token eingeben.", true);
+
+    try{
+      const user = await fetchJson("https://api.github.com/user", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      state.token = token;
+      sessionStorage.setItem("tournament_token", token);
+      updateAuthUI();
+      await loadData();
+      setStatus(`Angemeldet als ${user.login}`);
+    }catch(err){
+      console.error(err);
+      setStatus("Token ungültig oder ohne Berechtigung.", true);
+    }
+  }
+
+  function collectDataFromForm(){
+    const d = state.data;
+    d.eventName = $("#eventName").value.trim();
+    d.logoUrl = $("#logoUrl").value.trim();
+    d.nextGroup = $("#nextGroup").value.trim();
+    d.lastGroup = $("#lastGroup").value.trim();
+    d.note = $("#note").value.trim();
+    d.updatedAt = new Date().toISOString();
+    return d;
+  }
+
+  async function save(){
+    try{
+      if(!state.token) throw new Error("Bitte erst anmelden.");
+      collectDataFromForm();
+      await savePrivate(state.token, state.data);
+      await loadData();
+      setStatus("Gespeichert.");
+    }catch(err){
+      console.error(err);
+      setStatus(err.message || "Speichern fehlgeschlagen", true);
+    }
+  }
+
+  function addGroup(){
+    if(!state.data) return;
+    state.data.groups.push(emptyGroup(`Gruppe ${state.data.groups.length + 1}`));
+    renderTable();
+    setStatus("Neue Gruppe hinzugefügt. Bitte speichern.");
+  }
+
+  function bind(){
+    $("#loginBtn").addEventListener("click", login);
+    $("#saveBtn").addEventListener("click", save);
+    $("#reloadBtn").addEventListener("click", loadData);
+    $("#addGroupBtn").addEventListener("click", addGroup);
+    $("#logoutBtn").addEventListener("click", () => {
+      state.token = "";
+      sessionStorage.removeItem("tournament_token");
+      updateAuthUI();
+      setStatus("Token gelöscht.");
+    });
+
+    $("#token").addEventListener("keydown", e => {
+      if(e.key === "Enter") login();
+    });
+  }
+
+  async function init(){
+    bind();
+    updateAuthUI();
+    renderClock();
+    setInterval(renderClock, 1000);
+    await loadData();
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
+})();
+</script>
+</body>
+</html>
