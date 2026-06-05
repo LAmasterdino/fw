@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Admin · Turnierdashboard</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <script>
+    window.TOURNAMENT_CONFIG = {
+      repoOwner: "LAmasterdino",
+      repoName: "fw-data",
+      filePath: "data.json",
+      branch: "main",
+      rawDataUrl: "https://raw.githubusercontent.com/LAmasterdino/fw-data/main/data.json",
+      logoUrl: "https://raw.githubusercontent.com/LAmasterdino/fw/refs/heads/main/LOGO.jpg"
+    };
+  </script>
+  <script defer src="assets/app.js"></script>
+  <style>
+    :root {
+      --red: #DD0D1B;
+      --red-dark: #b40b16;
+      --white: #ffffff;
+      --bg: #f6f6f7;
+      --text: #161616;
+      --muted: #6b7280;
+      --line: rgba(221, 13, 27, 0.18);
+      --shadow: 0 12px 28px rgba(0, 0, 0, 0.10);
+      --radius: 22px;
+    }
+    body[data-page="admin"] {
+      background:
+        radial-gradient(circle at top left, rgba(221, 13, 27, 0.12), transparent 32%),
+        radial-gradient(circle at top right, rgba(221, 13, 27, 0.08), transparent 28%),
+        linear-gradient(180deg, #ffffff, var(--bg));
+      color: var(--text);
+    }
+    .page-shell {
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .shell {
+      max-width: 1500px;
+      margin: 0 auto;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      padding: 18px 20px;
+      background: rgba(255,255,255,0.88);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .title h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 2vw, 2.6rem);
+      color: var(--red);
+      letter-spacing: -0.03em;
+    }
+    .sub {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+    .badge {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--red);
+      color: var(--white);
+      font-weight: 700;
+      box-shadow: 0 10px 20px rgba(221, 13, 27, 0.2);
+      white-space: nowrap;
+    }
+    .card {
+      background: rgba(255,255,255,0.92);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+    .grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+    .login-card {
+      grid-column: 1 / -1;
+      border-left: 6px solid var(--red);
+    }
+    .login-row {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      align-items: end;
+      margin-top: 12px;
+    }
+    @media (max-width: 840px) {
+      .login-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    .label {
+      display: block;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--red-dark);
+      margin-bottom: 8px;
+    }
+    .help {
+      margin-top: 10px;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+    .btn {
+      appearance: none;
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      background: var(--red);
+      color: var(--white);
+    }
+    .btn-primary:hover { background: var(--red-dark); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--red);
+      border: 1px solid var(--line);
+    }
+    .btn-ghost:hover {
+      background: rgba(221, 13, 27, 0.06);
+    }
+    input[type="password"], input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid rgba(221, 13, 27, 0.24);
+      border-radius: 14px;
+      padding: 13px 14px;
+      font: inherit;
+      outline: none;
+      background: #fff;
+    }
+    input[type="password"]:focus, input[type="text"]:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 4px rgba(221, 13, 27, 0.10);
+    }
+    .content {
+      margin-top: 18px;
+    }
+    .table-wrap {
+      overflow: auto;
+      border-radius: 18px;
+      border: 1px solid rgba(221, 13, 27, 0.16);
+      background: #fff;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1120px;
+    }
+    th, td {
+      border-bottom: 1px solid rgba(221, 13, 27, 0.10);
+      padding: 10px;
+      text-align: left;
+      vertical-align: middle;
+    }
+    thead th {
+      position: sticky;
+      top: 0;
+      background: #fff;
+      z-index: 1;
+      color: var(--red-dark);
+      font-size: 0.92rem;
+    }
+    tr:hover td { background: rgba(221, 13, 27, 0.025); }
+    .mini {
+      min-width: 120px;
+      width: 100%;
+    }
+    .stack {
+      display: grid;
+      gap: 14px;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .split {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: end;
+    }
+    .muted { color: var(--muted); }
+    .small { font-size: 0.9rem; }
+    .status {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(221, 13, 27, 0.06);
+      color: var(--text);
+      border: 1px solid rgba(221, 13, 27, 0.14);
+    }
+    .status.error {
+      background: rgba(221, 13, 27, 0.10);
+      border-color: rgba(221, 13, 27, 0.30);
+      color: var(--red-dark);
+      font-weight: 700;
+    }
+    .inline-note {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(221, 13, 27, 0.05);
+      border: 1px solid rgba(221, 13, 27, 0.12);
+      color: var(--muted);
+    }
+    .footerbar {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.90);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(221, 13, 27, 0.08);
+      color: var(--red-dark);
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body data-page="admin">
+  <div class="page-shell">
+    <div class="shell">
+      <div class="topbar">
+        <div class="title">
+          <h1>Admin</h1>
+          <div class="sub">Gruppen anlegen, Zeiten pflegen und Platzierungen setzen</div>
+        </div>
+        <div class="badge">Uhrzeit: <span class="js-clock"></span></div>
+      </div>
+
+      <div class="grid">
+        <section class="card login-card">
+          <div class="split">
+            <div>
+              <h2 style="margin:0 0 6px;color:var(--red);font-size:1.2rem">Anmeldung</h2>
+              <div class="muted small">GitHub Token eintragen, kein Benutzername nötig.</div>
+            </div>
+            <div class="tag">Admin-Zugang</div>
+          </div>
+
+          <form id="login-form" class="stack" style="margin-top:14px">
+            <div>
+              <label class="label" for="token">GitHub Token</label>
+              <input id="token" type="password" placeholder="ghp_... oder github_pat_..." autocomplete="current-password">
+            </div>
+            <div class="login-row">
+              <div class="inline-note">
+                Nach erfolgreichem Login wird die Seite entsperrt und direkt mit dem Daten-Repo verbunden.
+              </div>
+              <button class="btn btn-primary" type="submit" data-action="login">Anmelden</button>
+              <button class="btn btn-ghost" type="button" data-action="refresh">Neu laden</button>
+            </div>
+          </form>
+          <div class="help">
+            Hinweis: Das ist nur eine einfache Browser-Sperre für GitHub Pages. Der Token bleibt im Browser nie wirklich geheim.
+          </div>
+        </section>
+
+        <section class="card" style="grid-column:1/-1">
+          <div class="split">
+            <div>
+              <h3 style="margin:0;color:var(--red-dark)">Status</h3>
+              <div class="muted small">Letzter Ladezustand und gespeicherte Daten</div>
+            </div>
+            <div class="tag">Bereit</div>
+          </div>
+          <div id="status" class="status">Bereit.</div>
+        </section>
+
+        <section class="card" style="grid-column:1/-1">
+          <div class="split">
+            <div>
+              <h3 style="margin:0;color:var(--red-dark)">Turnierdaten</h3>
+              <div class="muted small">3 Läufe für alle, danach Halbfinale, Platz 3 und Finale</div>
+            </div>
+          </div>
+          <div id="admin-root" class="content"></div>
+        </section>
+      </div>
+
+      <div class="footerbar muted small">
+        GitHub Pages · Adminseite · Farbstil um <strong>#DD0D1B</strong> und Weiß
+      </div>
+    </div>
+  </div>
+</body>
+</html>
